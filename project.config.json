@@ -1,0 +1,17 @@
+{
+  "description": "盖楼游戏 · 微信小游戏",
+  "miniprogramRoot": "minigame/",
+  "compileType": "game",
+  "appid": "touristappid",
+  "projectname": "tower-wechat",
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "enhance": true,
+    "minified": true
+  },
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  }
+}

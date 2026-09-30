@@ -1,0 +1,15 @@
+{
+  "profile": "game",
+  "sourceRoots": ["minigame"],
+  "locale": "zh-CN",
+  "canonicalMap": "DESIGN.md",
+  "requiredCapabilities": [],
+  "requiredCommands": ["unit", "package"],
+  "commands": {
+    "unit": "npm run test:wechat",
+    "package": "npm run check:wechat"
+  },
+  "evidence": {
+    "failurePaths": "tests/app.test.js"
+  }
+}

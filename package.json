@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && node index.js",
-    "build": "webpack --mode production --module-bind js=babel-loader"
+    "build": "webpack --mode production --module-bind js=babel-loader",
+    "test:wechat": "node --test tests/*.test.js",
+    "check:wechat": "node scripts/check-wechat.js",
+    "preview:wechat": "node scripts/create-preview.js"
   },
   "repository": {
     "type": "git",

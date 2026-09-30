@@ -207,7 +207,7 @@ test('580 至 850 高度在各难度完整摆动周期内，吊块主体始终�
       advanceUntil(game, () => !!game.active);
       const startX = game.active.x;
       let moved = false;
-      // 最慢阶段为 3.5 rad/s，4 秒覆盖所有难度的两个完整周期。
+      // 0.75 倍速下最慢阶段为 2.625 rad/s，4 秒覆盖所有难度的完整周期。
       for (let frame = 0; frame < 480; frame += 1) {
         game.update(1 / 120);
         const block = game.active;

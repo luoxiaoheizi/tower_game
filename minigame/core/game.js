@@ -5,6 +5,7 @@ const RULES = Object.freeze({
   successScore: 25,
   perfectBonus: 25,
   perfectTolerance: 0.1,
+  swingSpeedScale: 0.75,
   fixedStep: 1 / 120,
   maxFrameDelta: 0.1,
 });
@@ -101,7 +102,7 @@ class TowerGame {
     const block = this.active;
     const speed = this.floors < 10 ? 1 : this.floors < 20 ? 0.8 : this.floors < 30 ? 0.7 : 0.74;
     const targetAngle = this.floors === 0 ? 0 :
-      this._swingAmplitude * this._swingSign * Math.sin(this.time * 5 * speed);
+      this._swingAmplitude * this._swingSign * Math.sin(this.time * 5 * speed * RULES.swingSpeedScale);
     const ropeLength = this.height * 0.39;
     // 难度仍改变目标摆角；横向范围由画布宽度决定，长屏不会将吊块甩出视口。
     const horizontalRange = Math.min(Math.max(0, (this.width - block.width) / 2 - 8), ropeLength * 0.95);

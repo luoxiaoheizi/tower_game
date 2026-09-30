@@ -5,6 +5,9 @@ const assert = require('node:assert/strict')
 const { pathToFileURL } = require('node:url')
 const { chromium } = require(process.argv[2] || 'playwright')
 const output = path.resolve(__dirname, '../.preview')
+const target = process.argv[4] || 'wechat'
+assert(['wechat', 'douyin'].includes(target), '预览平台应为 wechat 或 douyin')
+const prefix = target === 'wechat' ? '' : 'douyin-'
 
 async function main() {
   const browser = await chromium.launch({ headless: true, channel: process.argv[3] || undefined })
@@ -15,9 +18,10 @@ async function main() {
       const page = await browser.newPage({ viewport, deviceScaleFactor: 1 })
       page.on('pageerror', error => errors.push(error.message))
       const size = `${viewport.width}x${viewport.height}`
-      await page.goto(pathToFileURL(path.join(output, 'wechat.html')).href)
+      await page.goto(pathToFileURL(path.join(output, `${target}.html`)).href)
       await page.waitForFunction(() => app.scene === 'home')
-      await page.screenshot({ path: path.join(output, `home-${size}.png`) })
+      if (target === 'douyin') await page.waitForFunction(() => app.sidebar.supported)
+      await page.screenshot({ path: path.join(output, `${prefix}home-${size}.png`) })
       const clickButton = async id => {
         const point = await page.evaluate(id => {
           const b = app.renderer.buttons.find(button => button.id === id)
@@ -27,6 +31,11 @@ async function main() {
         }, id)
         await page.mouse.click(point.x, point.y)
       }
+      if (target === 'douyin') {
+        assert.equal(await page.evaluate(() => previewStats.sidebarNavigations), 0)
+        await clickButton('sidebar')
+        assert.deepEqual(await page.evaluate(() => [app.scene, app.sidebar.fromSidebar, previewStats.sidebarNavigations]), ['home', true, 1])
+      }
       await clickButton('help')
       assert.equal(await page.evaluate(() => app.scene), 'help')
       await clickButton('home')
@@ -35,12 +44,12 @@ async function main() {
       await page.mouse.click(viewport.width / 2, viewport.height * 0.6)
       await page.waitForFunction(() => app.game.floors === 1)
       assert.equal(await page.evaluate(() => app.game.score), 25)
-      await page.screenshot({ path: path.join(output, `playing-${size}.png`) })
+      await page.screenshot({ path: path.join(output, `${prefix}playing-${size}.png`) })
       await clickButton('pause')
       assert.equal(await page.evaluate(() => app.scene), 'paused')
-      await page.screenshot({ path: path.join(output, `paused-${size}.png`) })
+      await page.screenshot({ path: path.join(output, `${prefix}paused-${size}.png`) })
       const before = await page.evaluate(() => app.game.time)
-      // 离线预览的后台按钮与微信 onHide 使用同一 app 生命周期。
+      // 离线预览的后台按钮与小游戏 onHide 使用同一 app 生命周期。
       await page.evaluate(() => { handlers.hide(); handlers.show() })
       assert.equal(await page.evaluate(() => app.scene), 'paused')
       assert.equal(await page.evaluate(() => app.game.time), before)
@@ -57,14 +66,19 @@ async function main() {
         app.render()
       })
       assert.equal(await page.evaluate(() => app.scene), 'gameover')
-      await page.screenshot({ path: path.join(output, `gameover-${size}.png`) })
+      await page.screenshot({ path: path.join(output, `${prefix}gameover-${size}.png`) })
+      if (target === 'douyin') {
+        await clickButton('share')
+        await page.waitForFunction(() => app.notice.includes('分享未完成'))
+        assert.equal(await page.evaluate(() => app.scene), 'gameover')
+      }
       await clickButton('restart')
       assert.deepEqual(await page.evaluate(() => [app.game.score, app.game.floors, app.game.lives, app.game.combo]), [0, 0, 3, 0])
-      reports.push({ viewport, workflow: '首页→说明→投放计分→暂停→后台恢复→三次失误→结算→重开', passed: true })
+      reports.push({ platform: target, sidebarAndShareSimulation: target === 'douyin', viewport, workflow: '首页→说明→投放计分→暂停→后台恢复→三次失误→结算→重开', passed: true })
       await page.close()
     }
     assert.deepEqual(errors, [], '浏览器运行报错')
-    fs.writeFileSync(path.join(output, 'browser-report.json'), JSON.stringify({ reports, errors }, null, 2))
+    fs.writeFileSync(path.join(output, `${prefix}browser-report.json`), JSON.stringify({ reports, errors }, null, 2))
     console.log(JSON.stringify({ reports, errors }, null, 2))
   } finally { await browser.close() }
 }

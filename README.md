@@ -4,6 +4,8 @@ English | [简体中文](./README.zh-CN.md)
 
 > 微信小游戏版：[运行说明](./README.wechat.md) · [上线待办与换电脑交接](./docs/WECHAT_HANDOFF.md)。
 
+> 抖音小游戏版：[构建与导入说明](./README.douyin.md) · [上线待办与换电脑交接](./docs/DOUYIN_HANDOFF.md)。开发分支：`feature/douyin-minigame`。
+
 <h1 align="center">Tower Building Game</h1>
 <p align="center"><img src="https://o2qq673j2.qnssl.com/tower-loading.gif"/></p>
 

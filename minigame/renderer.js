@@ -93,20 +93,23 @@ class Renderer {
       }
     } else if (app.scene === 'home') {
       const title = app.images['main-index-title']
-      const titleWidth = Math.min(w * 0.65, h * 0.34 * (title ? title.width / title.height : 0.75))
-      const titleHeight = title ? titleWidth * title.height / title.width : 250
-      const titleY = Math.min(this.safeTop + 5, h * 0.17)
+      // 预留侧边栏行，异步能力检查完成时不移动开始按钮。
+      const startY = h - this.safeBottom - 128 - (app.hasSidebar ? 52 : 0)
+      const titleY = app.hasSidebar ? this.safeTop + 5 : Math.min(this.safeTop + 5, h * 0.17)
+      const titleRatio = title ? title.width / title.height : 0.75
+      const titleWidth = Math.min(w * 0.65, h * 0.34 * titleRatio, app.hasSidebar ? Math.max(0, startY - 146 - titleY) * titleRatio : Infinity)
+      const titleHeight = titleWidth / titleRatio
       this.sprite(title, (w - titleWidth) / 2, titleY, titleWidth, titleHeight)
-      const cardY = Math.max(titleY + titleHeight + 8, h * 0.51)
+      const cardY = app.hasSidebar ? startY - 134 : Math.max(titleY + titleHeight + 8, h * 0.51)
       this.box(44, cardY, w - 88, 80, 20, C.paper)
       this.text('抓准时机，点一下放下楼层', w / 2, cardY + 25, 17, C.ink, 'bold')
       this.text('3 次机会，看看你能盖多高', w / 2, cardY + 55, 14, C.muted)
-      const startY = h - this.safeBottom - 128
       this.button('start', '开始盖楼', 58, startY, w - 116, true)
       this.box(72, startY - 40, w - 144, 30, 15, C.paper)
       this.text(`最高 ${app.record.score} 分 · ${app.record.floors} 层`, w / 2, startY - 25, 14, C.ink, 'bold')
       this.button('sound', app.settings.sound ? '声音：开' : '声音：关', 58, startY + 70, 124, false, 42)
       this.button('help', '玩法说明', w - 182, startY + 70, 124, false, 42)
+      if (app.sidebar && app.sidebar.supported) this.button('sidebar', '从侧边栏再来玩', 58, startY + 124, w - 116, false, 42)
     } else if (app.scene === 'help') {
       this.overlay()
       const y = Math.max(this.safeTop + 12, (h - 338) / 2)

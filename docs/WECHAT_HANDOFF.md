@@ -9,7 +9,7 @@
 | 远程仓库 | <https://github.com/luoxiaoheizi/tower_game> |
 | 当前开发分支 | `feature/wechat-minigame` |
 | 微信首版功能基线 | `ff4c761`（`feat: add native WeChat tower minigame`），已推送远程 |
-| 开发顺序 | 先完成微信版验收，再做抖音版；抖音版尚未开始 |
+| 开发顺序 | 按用户后续安排，已从微信版创建抖音分支；两平台真机验收分别推进 |
 | 产品阶段 | 单机可试玩首版，待微信平台验收、审核与发布 |
 | 正式 AppID | 尚未申请/提供；用户已选择保留 `touristappid` 占位 |
 | 微信上传、审核、发布 | 均未完成；GitHub 推送不等于微信上线 |
@@ -148,4 +148,4 @@ git pull --ff-only origin feature/wechat-minigame
 
 后续记录模板：`日期 / 提交号 / 修改内容 / 执行的检查与设备 / 结果及未解决问题 / 下一步`。审核资料可能变化，核实后写明日期；未执行的检查保持“待验证”。
 
-抖音版计划在微信版确认后，基于已保存的微信版本创建 `feature/douyin-minigame`，复用共用核心与渲染，新增 `tt` 平台适配及项目配置；目前没有创建或验证抖音版。
+抖音版已从微信提交 `4783a27` 创建 `feature/douyin-minigame` 分支，实现共用核心与渲染、独立 `tt` 适配及项目打包。具体进展与平台验收待办以 [抖音交接文档](./DOUYIN_HANDOFF.md) 为准；微信独立分支保留。

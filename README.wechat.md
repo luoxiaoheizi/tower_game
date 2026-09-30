@@ -91,7 +91,7 @@ node scripts/verify-browser.js <本机已安装的Playwright目录> msedge
 
 ## 后续抖音版
 
-微信版本确认后再创建 `feature/douyin-minigame`。复用 `core/`、`app.js`、`renderer.js`、`theme.js` 和资源，增加抖音平台适配与对应项目配置；重点重新验证 `tt` 输入、音频、生命周期、安全区和分享。当前没有声称抖音版已完成。
+抖音适配已在 `feature/douyin-minigame` 分支实现，复用核心、界面与资源，使用独立 `tt` 适配和构建输出。参见 [抖音运行说明](./README.douyin.md) 和 [抖音交接文档](./docs/DOUYIN_HANDOFF.md)。两平台开发者工具及真机验收仍需分别完成；微信独立分支 `feature/wechat-minigame` 保留。
 
 微信版本使用独立分支 `feature/wechat-minigame`。切换到另一条开发分支前，先确认当前修改已保存、工作区干净，避免把微信改动意外带过去。
 

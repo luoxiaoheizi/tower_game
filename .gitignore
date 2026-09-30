@@ -5,4 +5,5 @@ yarn.lock
 .DS_Store
 project.private.config.json
 .preview/
+.build/
 

@@ -4,10 +4,11 @@
   "locale": "zh-CN",
   "canonicalMap": "DESIGN.md",
   "requiredCapabilities": [],
-  "requiredCommands": ["unit", "package"],
+  "requiredCommands": ["unit", "package", "douyinPackage"],
   "commands": {
     "unit": "npm run test:wechat",
-    "package": "npm run check:wechat"
+    "package": "npm run check:wechat",
+    "douyinPackage": "npm run build:douyin && npm run check:douyin"
   },
   "evidence": {
     "failurePaths": "tests/app.test.js"

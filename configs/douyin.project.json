@@ -1,0 +1,8 @@
+{
+  "appid": "",
+  "projectname": "tower-douyin",
+  "setting": {
+    "es6": true,
+    "autoCompile": true
+  }
+}

@@ -8,7 +8,11 @@
     "build": "webpack --mode production --module-bind js=babel-loader",
     "test:wechat": "node --test tests/*.test.js",
     "check:wechat": "node scripts/check-wechat.js",
-    "preview:wechat": "node scripts/create-preview.js"
+    "preview:wechat": "node scripts/create-preview.js",
+    "test:douyin": "node --test tests/*.test.js",
+    "build:douyin": "node scripts/build-douyin.js",
+    "check:douyin": "node scripts/check-douyin.js",
+    "preview:douyin": "node scripts/create-preview.js douyin"
   },
   "repository": {
     "type": "git",

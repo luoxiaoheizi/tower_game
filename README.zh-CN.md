@@ -4,6 +4,8 @@
 
 > 微信小游戏版已提供：[导入、运行与验收说明](./README.wechat.md) · [上线待办与换电脑交接](./docs/WECHAT_HANDOFF.md)。原网页运行方法仍保留。
 
+> 抖音小游戏版：[构建与导入说明](./README.douyin.md) · [上线待办与换电脑交接](./docs/DOUYIN_HANDOFF.md)。开发分支：`feature/douyin-minigame`。
+
 <h1 align="center">盖楼游戏</h1>
 <p align="center"><img src="https://o2qq673j2.qnssl.com/tower-loading.gif"/></p>
 

@@ -20,10 +20,13 @@ class GameApp {
     this.frame = null
     this.lastTime = null
     this.loadVersion = 0
+    this.roundVersion = 0
     this.feedback = null
     this.notice = ''
     this.noticeTime = 0
     this.newRecord = false
+    this.hasSidebar = typeof platform.getSidebarState === 'function'
+    this.sidebar = this.hasSidebar ? platform.getSidebarState() : { supported: false, fromSidebar: false }
     const record = platform.readStorage(RECORD_KEY, {}) || {}
     this.record = { score: nonnegativeInteger(record.score), floors: nonnegativeInteger(record.floors) }
     const settings = platform.readStorage(SETTINGS_KEY, {}) || {}
@@ -45,6 +48,13 @@ class GameApp {
       platform.onShow(() => this.show()),
       platform.onResize(info => { this.renderer.resize(info); this.render() })
     ]
+    if (this.hasSidebar && typeof platform.onSidebarChange === 'function') {
+      this.unsubscribers.push(platform.onSidebarChange(state => {
+        if (this.destroyed) return
+        this.sidebar = state
+        this.render()
+      }))
+    }
     platform.enableShare(() => ({ score: this.game.score, floors: this.game.floors }))
     this.ready = this.load()
     this.schedule()
@@ -124,6 +134,7 @@ class GameApp {
   }
 
   start() {
+    this.roundVersion += 1
     this.game.reset()
     this.scene = 'playing'
     this.lastTime = null
@@ -203,8 +214,13 @@ class GameApp {
       if (!this.platform.writeStorage(SETTINGS_KEY, this.settings)) this.notify('声音设置暂未保存，本次仍生效')
       if (!this.settings.sound) this.stopAudio()
       else if (this.scene === 'playing') this.audio.bgm.play()
+    } else if (id === 'sidebar' && this.scene === 'home' && this.sidebar.supported) {
+      const failed = () => { if (!this.destroyed && this.scene === 'home') this.notify('侧边栏暂不可用，请稍后再试') }
+      if (!this.platform.navigateToSidebar(failed)) failed()
     } else if (id === 'share' && this.scene === 'gameover') {
-      if (!this.platform.share(this.game.score, this.game.floors)) this.notify('分享暂不可用，请稍后再试')
+      const round = this.roundVersion
+      const failed = () => { if (!this.destroyed && this.roundVersion === round && this.scene === 'gameover') this.notify('分享未完成，可稍后再试') }
+      if (!this.platform.share(this.game.score, this.game.floors, failed)) this.notify('分享暂不可用，请稍后再试')
     }
   }
 

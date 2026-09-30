@@ -65,6 +65,7 @@ function createHarness(t, options = {}) {
       return () => { delete listeners[name]; };
     };
   });
+  if (options.configurePlatform) options.configurePlatform(platform);
   const app = new GameApp(platform);
   app.game.random = () => 0.5;
 
@@ -360,4 +361,91 @@ test('重开清除上局分享失败提示', async t => {
   assert.equal(h.app.scene, 'playing');
   assert.equal(h.app.notice, '');
   assert.equal(h.app.noticeTime, 0);
+});
+
+
+test('侧边栏异步可用后出现，首页按钮不跳动，只有主动点击才导航', async t => {
+  let change;
+  let navigations = 0;
+  const h = createHarness(t, { configurePlatform(platform) {
+    platform.getSidebarState = () => ({ supported: false, fromSidebar: false });
+    platform.onSidebarChange = callback => { change = callback; return () => { change = null; }; };
+    platform.navigateToSidebar = () => { navigations += 1; return true; };
+  } });
+  await h.ready();
+  assert.equal(navigations, 0);
+  assert.equal(h.app.renderer.buttons.some(b => b.id === 'sidebar'), false);
+  const before = h.app.renderer.buttons.map(b => ({ ...b }));
+  h.app.action('sidebar');
+  assert.equal(navigations, 0);
+  change({ supported: true, fromSidebar: false });
+  assert.deepEqual(h.app.renderer.buttons.filter(b => b.id !== 'sidebar'), before);
+  assert.equal(navigations, 0);
+  h.tapButton('sidebar');
+  assert.equal(navigations, 1);
+  assert.equal(h.app.scene, 'home');
+  change({ supported: true, fromSidebar: true });
+  assert.equal(h.app.game.score, 0);
+  h.tapButton('start');
+  h.app.action('sidebar');
+  assert.equal(navigations, 1);
+  h.app.destroy();
+  assert.equal(change, null);
+});
+
+test('侧边栏和异步分享失败提供提示，重开或销毁后忽略旧分享回调', async t => {
+  let failNavigation, failShare;
+  const h = createHarness(t, { configurePlatform(platform) {
+    platform.getSidebarState = () => ({ supported: true, fromSidebar: false });
+    platform.navigateToSidebar = callback => { failNavigation = callback; return true; };
+    platform.share = (score, floors, callback) => { failShare = callback; return true; };
+  } });
+  await h.ready();
+  h.tapButton('sidebar');
+  failNavigation();
+  assert.match(h.app.notice, /侧边栏暂不可用/);
+  h.tapButton('start');
+  h.step();
+  landFirstFloor(h);
+  for (let count = 0; count < 3; count += 1) missNextFloor(h);
+  h.tapButton('share');
+  failShare();
+  assert.match(h.app.notice, /分享未完成/);
+  assert.equal(h.app.game.score, 25);
+  h.tapButton('restart');
+  failShare();
+  assert.equal(h.app.notice, '');
+  h.step();
+  landFirstFloor(h);
+  for (let count = 0; count < 3; count += 1) missNextFloor(h);
+  assert.equal(h.app.scene, 'gameover');
+  failShare();
+  assert.equal(h.app.notice, '');
+  h.app.destroy();
+  failNavigation();
+  failShare();
+  assert.equal(h.app.notice, '');
+});
+
+test('抖音侧边栏首页在窄屏和安全区内，各按钮互不重叠', async t => {
+  for (const info of [
+    { width: 320, height: 568, pixelRatio: 2, safeTop: 24, menuBottom: 64, safeBottom: 20 },
+    { width: 390, height: 844, pixelRatio: 3, safeTop: 47, menuBottom: 87, safeBottom: 34 }
+  ]) {
+    const h = createHarness(t, { info, configurePlatform(platform) {
+      platform.getSidebarState = () => ({ supported: true, fromSidebar: false });
+      platform.navigateToSidebar = () => true;
+    } });
+    await h.ready();
+    const buttons = h.app.renderer.buttons;
+    assert.equal(buttons.length, 4);
+    for (const a of buttons) {
+      assert.ok(a.y >= h.app.renderer.safeTop);
+      assert.ok(a.y + a.height <= h.app.game.height - h.app.renderer.safeBottom);
+      for (const b of buttons) if (a !== b) {
+        assert.ok(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y);
+      }
+    }
+    h.app.destroy();
+  }
 });

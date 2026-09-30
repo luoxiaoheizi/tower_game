@@ -1,10 +1,12 @@
 # 盖楼游戏 · 微信小游戏版
 
+> 准备上线或换电脑继续开发，请先看 [上线待办与换电脑交接](./docs/WECHAT_HANDOFF.md)，包含当前进度、验收清单和新电脑恢复步骤。
+
 本版在 `feature/wechat-minigame` 分支开发，原网页 `index.html`、`src/`、`dist/` 保留。微信运行包在 `minigame/`；导入微信开发者工具时选择仓库根目录 `tower_game`，由根目录 `project.config.json` 指向它。
 
 ## 打开游戏
 
-1. 打开微信开发者工具，选择导入项目，目录选择 `D:\MyAgent\Empower\tower_game`。
+1. 打开微信开发者工具，选择导入项目，目录选择当前电脑克隆得到的 `tower_game` 仓库根目录（原电脑路径为 `D:\MyAgent\Empower\tower_game`）。
 2. 使用自己注册的**微信小游戏 AppID**。仓库中的 `touristappid` 只是本地占位，不是可上传的正式 AppID；若工具不支持游客小游戏，需要填写自己的小游戏 AppID 才能继续。
 3. 确认项目类型为「小游戏」、根目录为 `minigame/`，点击编译。无需 npm 安装、npm 构建、云开发或服务器域名。
 4. 在模拟器点击「开始盖楼」，点击画面投放楼层；使用「暂停」暂停。真机预览需小游戏 AppID、开发者权限及微信扫码。
@@ -46,10 +48,10 @@ AppID 是项目标识；这里不需要、也不要填写 AppSecret。个人工�
 
 ## 本地检查
 
-使用 Node.js 18 或更新版本，不需要 `npm install`：
+本轮已验证的 Node.js 版本为 `v22.12.0`；以下微信版脚本不需要 `npm install`。使用其他版本时请先确认全部检查可运行：
 
 ```powershell
-cd D:\MyAgent\Empower\tower_game
+# 在当前电脑克隆得到的 tower_game 仓库根目录执行
 npm run test:wechat
 npm run check:wechat
 npm run preview:wechat

@@ -2,7 +2,7 @@
 
 [English](./README.md) | 简体中文
 
-> 微信小游戏版已提供：查看 [导入、运行与验收说明](./README.wechat.md)。原网页运行方法仍保留。
+> 微信小游戏版已提供：[导入、运行与验收说明](./README.wechat.md) · [上线待办与换电脑交接](./docs/WECHAT_HANDOFF.md)。原网页运行方法仍保留。
 
 <h1 align="center">盖楼游戏</h1>
 <p align="center"><img src="https://o2qq673j2.qnssl.com/tower-loading.gif"/></p>
